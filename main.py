@@ -7,15 +7,47 @@ if platform.system() == 'Windows':
     os.environ['SDL_VIDEODRIVER'] = 'windib'
 
 
-board1 = np.array([[0, 0, 0, 3, 3, 3, 0, 0, 0], 
-[0, 0, 0, 1, 1, 1, 0, 0, 0], 
+board1 = np.array([
+[0, 0, 0, 1, 3, 1, 0, 0, 0], 
+[0, 0, 0, 1, 3, 1, 0, 0, 0], 
 [0, 0, 0, 1, 3, 1, 0, 0, 0],
-[3, 3, 3, 1, 1, 1, 3, 3, 3], 
+[3, 3, 3, 1, 3, 1, 3, 3, 3], 
 [3, 3, 3, 3, 3, 3, 3, 3, 3], 
-[3, 3, 3, 2, 2, 2, 3, 3, 3], 
+[3, 3, 3, 2, 3, 2, 3, 3, 3], 
 [0, 0, 0, 2, 3, 2, 0, 0, 0], 
-[0, 0, 0, 2, 2, 2, 0, 0, 0], 
-[0, 0, 0, 3, 3, 3, 0, 0, 0]])
+[0, 0, 0, 2, 3, 2, 0, 0, 0], 
+[0, 0, 0, 2, 3, 2, 0, 0, 0]])
+
+board2 = np.array(
+[[0, 0, 0, 0, 1, 3, 3,1, 0, 0, 0, 0], 
+[0, 0, 0, 0, 1, 3, 3,1, 0, 0, 0, 0], 
+[0, 0, 0, 0, 1, 3, 3,1, 0, 0, 0, 0],
+[0, 0, 0, 0, 1, 3, 3,1, 0, 0, 0, 0],
+[3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3], 
+[3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3], 
+[3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
+[3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
+[0, 0, 0, 0, 2, 3, 3,2, 0, 0, 0, 0], 
+[0, 0, 0, 0, 2, 3, 3,2, 0, 0, 0, 0], 
+[0, 0, 0, 0, 2, 3, 3,2, 0, 0, 0, 0],
+[0, 0, 0, 0, 2, 3, 3,2, 0, 0, 0, 0]])
+
+board3 = np.array(
+[[0, 0, 0, 0, 0, 1, 3, 3, 3, 1, 0, 0, 0, 0, 0], 
+[0, 0, 0, 0, 0, 1, 3, 3, 3, 1, 0, 0, 0, 0, 0], 
+[0, 0, 0, 0, 0, 1, 3, 3, 3, 1, 0, 0, 0, 0, 0],
+[0, 0, 0, 0, 0, 1, 3, 3, 3, 1, 0, 0, 0, 0, 0],
+[0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 0, 0, 0, 0, 0],
+[3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3], 
+[3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3], 
+[3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
+[3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
+[3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
+[0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 0, 0, 0, 0, 0], 
+[0, 0, 0, 0, 0, 2, 3, 3, 3, 2, 0, 0, 0, 0, 0], 
+[0, 0, 0, 0, 0, 2, 3, 3, 3, 2, 0, 0, 0, 0, 0], 
+[0, 0, 0, 0, 0, 2, 3, 3, 3, 2, 0, 0, 0, 0, 0],
+[0, 0, 0, 0, 0, 2, 3, 3, 3, 2, 0, 0, 0, 0, 0]])
 
 def main():
      
@@ -23,12 +55,13 @@ def main():
     pygame.init() 
     WINDOW_SIZE =(610,610)
     screen = pygame.display.set_mode(WINDOW_SIZE)
-    board = Board(WINDOW_SIZE[0], WINDOW_SIZE[1],board1)
+    board = Board(WINDOW_SIZE[0], WINDOW_SIZE[1],board2)
     # load and set the logo
     #logo = pygame.image.load("logo.png")
     #pygame.display.set_icon(logo)
     def draw(display):
-        display.fill('white')
+        color=(254, 248, 221)
+        display.fill(color)
         board.draw(display)
         pygame.display.update()
 
@@ -37,15 +70,16 @@ def main():
     
     # define a variable to control the main loop
     running = True
-    #pygame.Surface.blit(screen, image, (0, 0))
-    # main loop
-    while running:    
-        # event handling, gets all event from the event queue
+    while running:
+        mx, my = pygame.mouse.get_pos()
         for event in pygame.event.get():
-            # only do something if the event is of type QUIT
+            # Quit the game if the user presses the close button
             if event.type == pygame.QUIT:
-                # change the value to False, to exit the main loop
                 running = False
+            elif event.type == pygame.MOUSEBUTTONDOWN: 
+                # If the mouse is clicked
+                if event.button == 1:
+                    board.handle_click(mx, my)
         draw(screen)
      
      

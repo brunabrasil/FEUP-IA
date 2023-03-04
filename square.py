@@ -12,7 +12,9 @@ class Square:
         self.abs_pos = (self.abs_x, self.abs_y)
         self.pos = (x, y)
         self.color='non-playable' if  type == 0 else 'playable'
-        self.draw_color = (255, 255, 255) if self.color == 'non-playable' else (254, 230, 227)
+        self.draw_color = (254, 248, 221) if self.color == 'non-playable' else (254, 230, 227)
+        self.highlight_img=pygame.image.load('images/green_ball3.png')
+        self.highlight = False
         self.occupying_piece = None
         self.coord = self.get_coord()
         self.rect = pygame.Rect(
@@ -24,14 +26,20 @@ class Square:
 
     # get the formal notation of the tile
     def get_coord(self):
-        columns = 'abcdefghi'
+        columns = 'abcdefghijklmnopqrstuvwxyz'
         return columns[self.x] + str(self.y + 1)
 
     def draw(self, display):
         # configures if tile should be light or dark or highlighted tile
         pygame.draw.rect(display, self.draw_color, self.rect)
-        # adds the chess piece icons
+        
+        # adds the balls icons
         if self.occupying_piece != None:
             centering_rect = self.occupying_piece.img.get_rect()
             centering_rect.center = self.rect.center
             display.blit(self.occupying_piece.img, centering_rect.topleft)
+        
+        if self.highlight:
+            centering_rect = self.highlight_img.get_rect()
+            centering_rect.center = self.rect.center
+            display.blit(self.highlight_img, centering_rect.topleft)
