@@ -10,6 +10,7 @@ class Board:
         self.tile_height = height // boardChoosen.shape[1]
         self.selected_piece = None
         self.board = boardChoosen
+        self.div=boardChoosen.shape[1]//3
         self.turn = 'red'
         self.squares = self.generate_squares()
         self.setup_board()
@@ -67,7 +68,7 @@ class Board:
         x = mx // self.tile_width
         y = my // self.tile_height
         clicked_square = self.get_square_from_pos((x, y))
-        print(clicked_square.x, clicked_square.y)
+        #print(clicked_square.x, clicked_square.y)
         if self.selected_piece is None:
             if clicked_square.occupying_piece is not None:
                 if clicked_square.occupying_piece.color == self.turn:
