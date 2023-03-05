@@ -29,53 +29,57 @@ class Ball:
     
     def moves_up_straight(self,board):
         moves=[]
-        #print('In up_straight')
-        for i in range(self.y - 1, -1, -1):
-            #print(i)
-            square = board.get_square_from_pos((self.x, i))
-            if square.occupying_piece is not None:
-                if square.occupying_piece.color != 'white':
-                    #print('Nao foi branco 1')
-                    #print(square.occupying_piece.color)
-                    #print(moves)
-                    return moves
-                else:
-                    #print('Chegueiiiii')
-                    moves.append(square) 
-                    #print(moves) 
+        print('In up_straight')
+        if self.x>=board.div and self.x<board.board.shape[1]-board.div :
+ 
+            for i in range(self.y - 1, -1, -1):
+                #print(i)
+                square = board.get_square_from_pos((self.x, i))
+                if square.occupying_piece is not None:
+                    if square.occupying_piece.color != 'white':
+                        #print('Nao foi branco 1')
+                        #print(square.occupying_piece.color)
+                        #print(moves)
+                        return moves
+                    else:
+                        #print('Chegueiiiii')
+                        moves.append(square) 
+                        #print(moves) 
 
-        for i in range(board.board.shape[1]-1, self.y,-1):
-            square = board.get_square_from_pos((self.x, i))
-            if square.occupying_piece is not None:
-                if square.occupying_piece.color != 'white':
-                    #print(square.occupying_piece.color)
-                    return moves
-                moves.append(square)  
+            print('In second for up_straight')
+            for i in range(board.board.shape[1]-1, self.y,-1):
+                square = board.get_square_from_pos((self.x, i))
+                if square.occupying_piece is not None:
+                    if square.occupying_piece.color != 'white':
+                        #print(square.occupying_piece.color)
+                        return moves
+                    moves.append(square)  
         
         return moves
     
     def moves_down_straight(self,board):
         moves=[]
         #print('In down_straight')
-        for y in range(self.y + 1, board.board.shape[1]):
-            square = board.get_square_from_pos((self.x, y))
-            if square.occupying_piece is not None:
-                if square.occupying_piece.color != 'white':
-                    #print('Nao foi branco')
+        if self.x>=board.div and self.x<board.board.shape[1]-board.div :
+            for y in range(self.y + 1, board.board.shape[1]):
+                square = board.get_square_from_pos((self.x, y))
+                if square.occupying_piece is not None:
+                    if square.occupying_piece.color != 'white':
+                        #print('Nao foi branco')
+                        #print(square.occupying_piece.color)
+                        return moves
                     #print(square.occupying_piece.color)
-                    return moves
-                #print(square.occupying_piece.color)
-                moves.append(square) 
-       
-        for y in range(0, self.y):
-            square =board.get_square_from_pos((self.x, y))
-            if square.occupying_piece is not None:
-                if square.occupying_piece.color != 'white':
-                    #print('Nao foi branco')
+                    moves.append(square) 
+        
+            for y in range(0, self.y):
+                square =board.get_square_from_pos((self.x, y))
+                if square.occupying_piece is not None:
+                    if square.occupying_piece.color != 'white':
+                        #print('Nao foi branco')
+                        #print(square.occupying_piece.color)
+                        return moves
                     #print(square.occupying_piece.color)
-                    return moves
-                #print(square.occupying_piece.color)
-                moves.append(square)
+                    moves.append(square)    
         
         return moves
     
@@ -117,45 +121,108 @@ class Ball:
                 
         return moves
     
+    def aux_curve_moves(self,board,top_row,right_column,bottom_row,left_column):
+        moves_temp=[]
+        
+        for i in range(board.div,2*board.div):
+                square=board.get_square_from_pos((i, top_row))
+                if square.occupying_piece is not None:
+                        moves_temp.append(square)
+        
+        for i in range(board.div,2*board.div):
+                square=board.get_square_from_pos((right_column,i))
+                if square.occupying_piece is not None:
+                        moves_temp.append(square)
+                        
+        for i in range(2*board.div-1,board.div-1,-1):
+                square=board.get_square_from_pos((i,bottom_row))
+                if square.occupying_piece is not None:
+                        moves_temp.append(square)
+        
+        for i in range(2*board.div-1,board.div-1,-1):
+                square=board.get_square_from_pos((left_column,i))
+                if square.occupying_piece is not None:
+                        moves_temp.append(square)
+        
+        #print(moves_temp)
+        return moves_temp
+    
     def moves_clockwise(self,board):
         moves=[]
         moves_temp=[]
-
-        #head
+        print(self.x,self.y)
+        #head or bottom
         if self.y>=board.board.shape[1]-board.div or self.y<board.div :
-            #DO THINGS HERE
+            #print('head or bottom')
+            # top row
+            top_row=self.y if self.y<board.div else board.board.shape[1]-1-self.y
+            #right column
+            right_column=max(self.y,board.board.shape[1]-1-self.y)          
+            #bottom row
+            bottom_row=board.board.shape[1]-1-self.y if self.y<board.div else self.y            
+            #left column
             left_column=min(self.y,board.board.shape[1]-1-self.y)
-            for i in range(board.div,2*board.div):
-                square=board.get_square_from_pos((i,left_column))
-                if square.occupying_piece is not None:
-                        moves_temp.append(square)    
+  
             
-            
-            for i in range(board.div,2*board.div):
-                square=board.get_square_from_pos((self.y,i))
-                if square.occupying_piece is not None:
-                        moves_temp.append(square)
-            
-            right_column=max(self.y,board.board.shape[1]-1-self.y)
-            for i in range(board.div,2*board.div):
-                square=board.get_square_from_pos((i,right_column))
-                if square.occupying_piece is not None:
-                        moves_temp.append(square)
-                        
-                        
-            inverted_line=board.board.shape[1]-1-self.y
-            for i in range(board.div,2*board.div):
-                square=board.get_square_from_pos((inverted_line,i))
-                if square.occupying_piece is not None:
-                        moves_temp.append(square)
-
-            
+         
+        #right and left arms
+        elif self.x>=board.board.shape[1]-board.div or self.x<board.div :
+            #print('right and left arms')
+            # top row
+            top_row=min(self.x,board.board.shape[1]-1-self.x)            
+            # right column
+            right_column=self.x if self.x>board.div else board.board.shape[1]-1-self.x         
+            #bottom row
+            bottom_row=max(self.x,board.board.shape[1]-1-self.x)              
+            #left column
+            left_column=board.board.shape[1]-1-self.x if self.x>board.div else self.x
         
-
-            
-            return moves
+        else:
+            #print('else')
+            return []    
         
         # PUT REST HERE
+        moves_temp=self.aux_curve_moves(board,top_row,right_column,bottom_row,left_column)
+        
+        
+        square_index=moves_temp.index(board.get_square_from_pos((self.x,self.y)))
+        
+        end=False
+        # RIGHT STRAIGHT
+        for i in range(square_index+1,len(moves_temp)):
+            square=moves_temp[i]
+            if square.occupying_piece.color != 'white':
+                end=True
+                break
+            moves.append(square)
+        
+        # Reached the end of the list, so we need to check the beginning
+        if not end:
+            for i in range(0,square_index):
+                square=moves_temp[i]
+                if square.occupying_piece.color != 'white':
+                    break
+                moves.append(square)
+        
+        end=False
+        # LEFT STRAIGHT
+        for i in range(square_index-1,-1,-1):
+            square=moves_temp[i]
+            if square.occupying_piece.color != 'white':
+                end=True
+                break
+            moves.append(square)
+        
+        # Reached the beginning of the list, so we need to check the end
+        if not end:
+            for i in range(len(moves_temp)-1,square_index,-1):
+                square=moves_temp[i]
+                if square.occupying_piece.color != 'white':
+                    break
+                moves.append(square)
+        
+
+    
         return moves
 
 
@@ -172,6 +239,7 @@ class Ball:
         output.append(self.moves_down_straight(board))
         output.append(self.moves_right_straight(board))
         output.append(self.moves_left_straight(board))
+        output.append(self.moves_clockwise(board))
         #print(output)
         return output
     
