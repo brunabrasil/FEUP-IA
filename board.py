@@ -75,20 +75,22 @@ class Board:
                     self.selected_piece = clicked_square.occupying_piece 
         elif self.selected_piece.move(self, clicked_square):
             self.turn = 'blue' if self.turn == 'red' else 'red'
-            
-"""     def is_in_checkmate(self, color):
-	    output = False
+            if self.check_gameover(self.turn):
+                print("Game Over")
+                return False
+        return True   
+        
+        
+
+    def check_gameover(self,color):
+        output = False
+        
         for piece in [i.occupying_piece for i in self.squares]:
-		    if piece != None:
-			    if piece.notation == 'K' and piece.color == color:
-				    king = piece
-
-
-		    if king.get_valid_moves(self) == []:
-		        if self.is_in_check(color):
-				    output = True
-
-	    return output """
+            if piece != None:
+                if piece.get_moves(self) == [] and piece.color==color:
+                    output = True
+                    
+        return output 
 
     
 

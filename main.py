@@ -2,6 +2,7 @@ import pygame
 import numpy as np
 import os
 import platform
+import time
 from board import Board
 if platform.system() == 'Windows':
     os.environ['SDL_VIDEODRIVER'] = 'windib'
@@ -55,7 +56,7 @@ def main():
     pygame.init() 
     WINDOW_SIZE =(610,610)
     screen = pygame.display.set_mode(WINDOW_SIZE)
-    board = Board(WINDOW_SIZE[0], WINDOW_SIZE[1],board1)
+    board = Board(WINDOW_SIZE[0], WINDOW_SIZE[1],board2)
     # load and set the logo
     #logo = pygame.image.load("logo.png")
     #pygame.display.set_icon(logo)
@@ -79,8 +80,12 @@ def main():
             elif event.type == pygame.MOUSEBUTTONDOWN: 
                 # If the mouse is clicked
                 if event.button == 1:
-                    board.handle_click(mx, my)
+                    if not board.handle_click(mx, my):
+                        
+                        running=False
         draw(screen)
+    
+    time.sleep(1)
      
      
 # run the main function only if this module is executed as the main script

@@ -86,38 +86,40 @@ class Ball:
         
     def moves_right_straight(self,board):
         moves = []
-        for x in range(self.x + 1, board.board.shape[1]):
-            square = board.get_square_from_pos((x, self.y))
-            if square.occupying_piece is not None:
-                if square.occupying_piece.color != 'white':
-                    return moves
-                moves.append(square)
-            
-        for x in range(0, self.x):
-            square = board.get_square_from_pos((x, self.y))
-            if square.occupying_piece is not None:
-                if square.occupying_piece.color != 'white':
-                    return moves
-                moves.append(square)
+        if self.y>=board.div and self.y<board.board.shape[1]-board.div :
+            for x in range(self.x + 1, board.board.shape[1]):
+                square = board.get_square_from_pos((x, self.y))
+                if square.occupying_piece is not None:
+                    if square.occupying_piece.color != 'white':
+                        return moves
+                    moves.append(square)
+                
+            for x in range(0, self.x):
+                square = board.get_square_from_pos((x, self.y))
+                if square.occupying_piece is not None:
+                    if square.occupying_piece.color != 'white':
+                        return moves
+                    moves.append(square)
             
         return moves
     
     def moves_left_straight(self,board):
         moves = []
-        for x in range(self.x)[::-1]:
-            square = board.get_square_from_pos((x, self.y))
-            if square.occupying_piece is not None:
-                if square.occupying_piece.color != 'white':
-                    return moves
-                moves.append(square)
-        
-        for x in range(board.board.shape[1] - 1, self.x, -1):
-            square = board.get_square_from_pos((x, self.y))
-            #print(self.x)
-            if square.occupying_piece is not None:
-                if square.occupying_piece.color != 'white':
-                    return moves
-                moves.append(square)
+        if self.y>=board.div and self.y<board.board.shape[1]-board.div :
+            for x in range(self.x)[::-1]:
+                square = board.get_square_from_pos((x, self.y))
+                if square.occupying_piece is not None:
+                    if square.occupying_piece.color != 'white':
+                        return moves
+                    moves.append(square)
+            
+            for x in range(board.board.shape[1] - 1, self.x, -1):
+                square = board.get_square_from_pos((x, self.y))
+                #print(self.x)
+                if square.occupying_piece is not None:
+                    if square.occupying_piece.color != 'white':
+                        return moves
+                    moves.append(square)
                 
         return moves
     
@@ -262,4 +264,6 @@ class Ball:
         else:
             board.selected_piece = None
             return False
+        
+
 
