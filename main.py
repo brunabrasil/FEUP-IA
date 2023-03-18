@@ -56,7 +56,7 @@ def main():
     pygame.init() 
     WINDOW_SIZE =(610,610)
     screen = pygame.display.set_mode(WINDOW_SIZE)
-    board = Board(WINDOW_SIZE[0], WINDOW_SIZE[1],board2)
+    board = Board(WINDOW_SIZE[0], WINDOW_SIZE[1],board1)
     # load and set the logo
     #logo = pygame.image.load("logo.png")
     #pygame.display.set_icon(logo)

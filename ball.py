@@ -248,8 +248,8 @@ class Ball:
     
     
     def move(self, board, square):
-        print('Entrou na move')
-        print(self.x,self.y)
+        #print('Entrou na move')
+        #print(self.x,self.y)
         for i in board.squares:
             i.highlight = False
         if square in self.get_moves(board):
@@ -265,5 +265,19 @@ class Ball:
             board.selected_piece = None
             return False
         
-
+    def experimental_move(self, board, square):
+        print('Entrou na experimental_move')
+        #print(self.x,self.y)
+            
+        new_board=board
+        
+        prev_square = new_board.get_square_from_pos(self.pos)
+        self.pos, self.x, self.y = square.pos, square.x, square.y
+        prev_square.occupying_piece = Ball((prev_square.x, prev_square.y), 'white', board)
+        square.occupying_piece = self
+        new_board.selected_piece = None
+        self.has_moved = True
+        return new_board
+            
+     
 

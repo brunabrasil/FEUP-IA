@@ -3,7 +3,7 @@ import numpy as np
 from square import Square
 from ball import Ball
 class Board:
-    def __init__(self, width, height,boardChoosen):
+    def __init__(self, width, height,boardChoosen, redtype, bluetype):
         self.width = width
         self.height = height
         self.tile_width = width // boardChoosen.shape[1] #the tile's size will depend of the board size chosen
@@ -11,6 +11,8 @@ class Board:
         self.selected_piece = None
         self.board = boardChoosen
         self.div=boardChoosen.shape[1]//3
+        self.redPlayerType=redtype
+        self.bluePlayerType=bluetype
         self.turn = 'red'
         self.squares = self.generate_squares()
         self.setup_board()
@@ -92,5 +94,28 @@ class Board:
                     
         return output 
 
-    
+    # get pieces of a certain player
+    def get_pieces(self):
+        pieces = []
+        for square in self.squares:
+            if square.occupying_piece.color == self.turn:
+                pieces.append(
+                    square
+                )
+        return pieces
 
+    def evaluate(board):
+        red_score=0
+        blue_score=0
+        
+        for square in board.squares:
+            if square.occupying_piece.color=='red':
+                red_score+=len(square.occupying_piece.get_possible_moves(board))
+            elif square.occupying_piece.color=='blue':
+                blue_score+=len(square.occupying_piece.get_possible_moves(board))
+        
+        if board.turn=='red':
+            return blue_score
+        
+        # Blue turn
+        return red_score
