@@ -29,7 +29,7 @@ class Ball:
     
     def moves_up_straight(self,board):
         moves=[]
-        print('In up_straight')
+        #print('In up_straight')
         if self.x>=board.div and self.x<board.board.shape[1]-board.div :
  
             for i in range(self.y - 1, -1, -1):
@@ -46,7 +46,7 @@ class Ball:
                         moves.append(square) 
                         #print(moves) 
 
-            print('In second for up_straight')
+            #print('In second for up_straight')
             for i in range(board.board.shape[1]-1, self.y,-1):
                 square = board.get_square_from_pos((self.x, i))
                 if square.occupying_piece is not None:
@@ -152,7 +152,7 @@ class Ball:
     def moves_clockwise(self,board):
         moves=[]
         moves_temp=[]
-        print(self.x,self.y)
+        #print(self.x,self.y)
         #head or bottom
         if self.y>=board.board.shape[1]-board.div or self.y<board.div :
             #print('head or bottom')
@@ -266,17 +266,17 @@ class Ball:
             return False
         
     def experimental_move(self, board, square):
-        print('Entrou na experimental_move')
+        #print('Entrou na experimental_move')
         #print(self.x,self.y)
-            
+        #print(square)
         new_board=board
-        
         prev_square = new_board.get_square_from_pos(self.pos)
         self.pos, self.x, self.y = square.pos, square.x, square.y
-        prev_square.occupying_piece = Ball((prev_square.x, prev_square.y), 'white', board)
+        prev_square.occupying_piece = Ball((prev_square.x, prev_square.y), 'white', new_board)
         square.occupying_piece = self
         new_board.selected_piece = None
         self.has_moved = True
+        new_board.turn = 'blue' if new_board.turn == 'red' else 'red'
         return new_board
             
      

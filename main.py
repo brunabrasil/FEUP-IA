@@ -5,14 +5,10 @@ import platform
 import time
 from board import Board
 import pygame_menu
-from pygame_menu import themes
 
 if platform.system() == 'Windows':
     os.environ['SDL_VIDEODRIVER'] = 'windib'
-
-
  
-
 
 board1 = np.array([
 [0, 0, 0, 1, 3, 1, 0, 0, 0], 
@@ -63,30 +59,77 @@ def main():
     WINDOW_SIZE =(610,610)
     screen = pygame.display.set_mode(WINDOW_SIZE)
     global board
-    board = Board(WINDOW_SIZE[0], WINDOW_SIZE[1],board1)
-    def start_the_game():
+    global redType
+    global blueType
+    global difficulty
+    global actualsize
+    redType ="human"
+    blueType="human"
+    difficulty = "easy"
+    board = Board(WINDOW_SIZE[0], WINDOW_SIZE[1],board1,redType,blueType, difficulty)
+    actualsize=1
+    
+    def start_with_mode():
+        global redType
+        global blueType
+        global board
+        global actualsize
+        global difficulty
+        if actualsize == 1:
+            board = Board(WINDOW_SIZE[0], WINDOW_SIZE[1], board1, redType, blueType, difficulty)
+        elif actualsize == 2:   
+            board = Board(WINDOW_SIZE[0], WINDOW_SIZE[1], board2, redType, blueType, difficulty)
+        elif actualsize == 3:
+            board = Board(WINDOW_SIZE[0], WINDOW_SIZE[1], board3, redType, blueType, difficulty)
+        difficultymenu.disable()
         submenu.disable()
         mainmenu.disable()
+    
+    def start_the_game():
+        global redType
+        global blueType
+        if(redType=="computer" or blueType=="computer"):
+            submenu._open(difficultymenu)
+        else:
+            global board
+            global actualsize
+            if actualsize == 1:
+                board = Board(WINDOW_SIZE[0], WINDOW_SIZE[1], board1, redType, blueType,difficulty)
+            elif actualsize == 2:   
+                board = Board(WINDOW_SIZE[0], WINDOW_SIZE[1], board2, redType, blueType,difficulty)
+            elif actualsize == 3:
+                board = Board(WINDOW_SIZE[0], WINDOW_SIZE[1], board3, redType, blueType,difficulty)
+            submenu.disable()
+            mainmenu.disable()
     
     def level_menu():
         mainmenu._open(submenu)
     
     def set_size(value, size):
         print(value)
-        global board
-        if size == 1:
-            board = Board(WINDOW_SIZE[0], WINDOW_SIZE[1],board1)
-        elif size == 2:
-            board = Board(WINDOW_SIZE[0], WINDOW_SIZE[1],board2)
-        elif size == 3:
-            board = Board(WINDOW_SIZE[0], WINDOW_SIZE[1],board3)
-
-        print(size)
+        global actualsize 
+        actualsize = size
         
     def set_mode(value, mode):
-        print(value)
-        print(mode)
- 
+        global redType
+        global blueType
+        if mode == 1:
+            redType = "human"
+            blueType = "human"
+        if mode==2:
+            redType="human"
+            blueType="computer"
+        if mode==3:
+            redType="computer"
+            blueType="computer"
+    
+    def set_difficulty(value, diff):
+        global difficulty
+        if diff == 1:
+            difficulty = "easy"
+        if diff == 2:
+            difficulty = "hard"    
+        
     mytheme = pygame_menu.themes.THEME_BLUE.copy()
     mytheme.cursor_selection_color=(85, 203, 205)
     mytheme.title_font_shadow = False
@@ -100,6 +143,11 @@ def main():
     submenu.add.selector('Mode: ', [('Player vs Player', 1), ('Player vs Computer', 2), ('Computer vs Computer', 3)], onchange=set_mode)
     submenu.add.selector('Board Size:', [('Small', 1), ('Medium', 2), ('Large', 3)], onchange=set_size)
     submenu.add.button('Start Game', start_the_game)
+    
+    difficultymenu = pygame_menu.Menu('Choose computer difficulty', 610, 610, theme=mytheme)
+    difficultymenu.add.selector('Computer Difficulty:', [('Easy', 1), ('Hard', 2)], onchange=set_difficulty)
+    difficultymenu.add.button('Start Game', start_with_mode)
+
     mainmenu.mainloop(screen)
 
     # load and set the logo
@@ -120,6 +168,11 @@ def main():
     while running:
         mx, my = pygame.mouse.get_pos()
         events = pygame.event.get()
+        if board.turn == "red" and redType == "computer":
+            board.computer_move()
+        elif board.turn == "blue" and blueType == "computer":
+            board.computer_move()
+            
         for event in events:
             # Quit the game if the user presses the close button
             if event.type == pygame.QUIT:
@@ -127,8 +180,10 @@ def main():
             elif event.type == pygame.MOUSEBUTTONDOWN: 
                 # If the mouse is clicked
                 if event.button == 1:
-                    if not board.handle_click(mx, my):
-                        running=False
+                    if (board.turn == "red" and redType == "human") or (board.turn == "blue" and blueType == "human"):
+                        if not board.handle_click(mx, my):
+                            running=False
+        
             
         if mainmenu.is_enabled():
             mainmenu.update(events)

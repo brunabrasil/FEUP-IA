@@ -1,9 +1,11 @@
 import pygame
 import numpy as np
+import time
+from minimax import execute_minimax_move
 from square import Square
 from ball import Ball
 class Board:
-    def __init__(self, width, height,boardChoosen, redtype, bluetype):
+    def __init__(self, width, height,boardChoosen, redType, blueType,difficulty):
         self.width = width
         self.height = height
         self.tile_width = width // boardChoosen.shape[1] #the tile's size will depend of the board size chosen
@@ -11,8 +13,9 @@ class Board:
         self.selected_piece = None
         self.board = boardChoosen
         self.div=boardChoosen.shape[1]//3
-        self.redPlayerType=redtype
-        self.bluePlayerType=bluetype
+        self.redPlayerType=redType
+        self.bluePlayerType=blueType
+        self.computerDifficulty=difficulty
         self.turn = 'red'
         self.squares = self.generate_squares()
         self.setup_board()
@@ -98,10 +101,11 @@ class Board:
     def get_pieces(self):
         pieces = []
         for square in self.squares:
-            if square.occupying_piece.color == self.turn:
-                pieces.append(
-                    square
-                )
+            if square.occupying_piece is not None:
+                if square.occupying_piece.color == self.turn:
+                    pieces.append(
+                        square
+                    )
         return pieces
 
     def evaluate(board):
@@ -109,13 +113,30 @@ class Board:
         blue_score=0
         
         for square in board.squares:
-            if square.occupying_piece.color=='red':
-                red_score+=len(square.occupying_piece.get_possible_moves(board))
-            elif square.occupying_piece.color=='blue':
-                blue_score+=len(square.occupying_piece.get_possible_moves(board))
+            if square.occupying_piece is not None:
+                if square.occupying_piece.color=='red':
+                    red_score+=len(square.occupying_piece.get_moves(board))
+                elif square.occupying_piece.color=='blue':
+                    blue_score+=len(square.occupying_piece.get_moves(board))
         
         if board.turn=='red':
-            return blue_score
+            return -blue_score
         
         # Blue turn
-        return red_score
+        return -red_score
+    
+    def computer_move(self):
+        print("In computer move")
+        print(self.turn)
+        time.sleep(1)
+        if self.computerDifficulty=="easy":
+            pieces_list=self.get_pieces()
+            random_piece=pieces_list[np.random.randint(0,len(pieces_list))]
+            random_move_list=random_piece.occupying_piece.get_moves(self)
+            random_move=random_move_list[np.random.randint(0,len(random_move_list))]
+            self=random_piece.occupying_piece.experimental_move(self,random_move)
+        elif self.computerDifficulty=="hard":
+            self=execute_minimax_move(Board.evaluate,1,self)
+            
+        print("Board turn after computer move")
+        print(self.turn)
