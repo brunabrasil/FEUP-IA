@@ -134,6 +134,7 @@ def main():
     mytheme.cursor_selection_color=(85, 203, 205)
     mytheme.title_font_shadow = False
     mytheme.title_font = pygame_menu.font.FONT_BEBAS
+    
     mainmenu = pygame_menu.Menu('WANA', 610, 610, theme=mytheme)
     mainmenu.add.button('Play', level_menu)
     mainmenu.add.button('Instructions', level_menu)
@@ -192,8 +193,19 @@ def main():
                 arrow.draw(screen, mainmenu.get_current().get_selected_widget())
  
         draw(screen)
+    if board.turn == 'blue':
+        screen.fill((0, 0, 0))
+        font = pygame.font.SysFont('arial', 40)
+        title = font.render('Game Over! Red player won', True, (255, 255, 255))
+    elif board.turn == 'red':
+        screen.fill((85, 203, 205))
+        font = pygame.font.SysFont('arial', 40)
+        title = font.render('Game Over! Blue player won', True, (255, 255, 255))
+        
+    screen.blit(title, (610/2 - title.get_width()/2, 610/2 - title.get_height()/3))
+    pygame.display.update()
+    time.sleep(2)
 
-    time.sleep(1)
      
      
 # run the main function only if this module is executed as the main script
