@@ -1,31 +1,42 @@
 import pygame
 import numpy as np
 import time
+import copy
 from minimax import execute_minimax_move
 from square import Square
 from ball import Ball
 class Board:
-    def __init__(self, width, height,boardChoosen, redType, blueType,difficulty):
-        self.width = width
-        self.height = height
-        self.tile_width = width // boardChoosen.shape[1] #the tile's size will depend of the board size chosen
-        self.tile_height = height // boardChoosen.shape[1]
-        self.selected_piece = None
-        self.board = boardChoosen
-        self.div=boardChoosen.shape[1]//3
-        self.redPlayerType=redType
-        self.bluePlayerType=blueType
-        self.computerDifficulty=difficulty
-        self.turn = 'red'
-        self.squares = self.generate_squares()
-        self.setup_board()
+    def __init__(self, width=None, height=None,boardChoosen=None, redType=None, blueType=None,difficulty=None):
+        if(width is not None):
+            self.width = width
+            self.height = height
+            self.tile_width = width // boardChoosen.shape[1] #the tile's size will depend of the board size chosen
+            self.tile_height = height // boardChoosen.shape[1]
+            self.selected_piece = None
+            self.matrix = boardChoosen
+            self.div=boardChoosen.shape[1]//3
+            self.redPlayerType=redType
+            self.bluePlayerType=blueType
+            self.computerDifficulty=difficulty
+            self.turn = 'red'
+            self.squares = self.generate_squares()
+            self.setup_board()
+
+    def copy(self):
+        copyobj = Board()
+        for name, attr in self.__dict__.items():
+            if hasattr(attr, 'copy') and callable(getattr(attr, 'copy')):
+                copyobj.__dict__[name] = attr.copy()
+            else:
+                copyobj.__dict__[name] = copy.deepcopy(attr)
+        return copyobj
 
     def generate_squares(self):
         board = []
-        for y in range(self.board.shape[0]):
-            for x in range(self.board.shape[0]):
+        for y in range(self.matrix.shape[0]):
+            for x in range(self.matrix.shape[0]):
                 board.append(
-                    Square(x,  y, self.tile_width, self.tile_height, self.board[x][y])
+                    Square(x,  y, self.tile_width, self.tile_height, self.matrix[x][y])
                 )
         return board
     
@@ -40,7 +51,7 @@ class Board:
     
 
     def setup_board(self):
-        for y, row in enumerate(self.board):
+        for y, row in enumerate(self.matrix):
             for x, piece in enumerate(row):
                 if piece != 0:
                     square = self.get_square_from_pos((x, y))
@@ -125,6 +136,9 @@ class Board:
         # Blue turn
         return -red_score
     
+    
+    
+    
     def computer_move(self):
         print("In computer move")
         print(self.turn)
@@ -140,3 +154,7 @@ class Board:
             
         print("Board turn after computer move")
         print(self.turn)
+
+
+
+    

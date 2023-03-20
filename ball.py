@@ -1,4 +1,6 @@
 import pygame
+import copy
+
 
 class Ball:
     def __init__(self, pos, color, board):
@@ -30,7 +32,7 @@ class Ball:
     def moves_up_straight(self,board):
         moves=[]
         #print('In up_straight')
-        if self.x>=board.div and self.x<board.board.shape[1]-board.div :
+        if self.x>=board.div and self.x<board.matrix.shape[1]-board.div :
  
             for i in range(self.y - 1, -1, -1):
                 #print(i)
@@ -47,7 +49,7 @@ class Ball:
                         #print(moves) 
 
             #print('In second for up_straight')
-            for i in range(board.board.shape[1]-1, self.y,-1):
+            for i in range(board.matrix.shape[1]-1, self.y,-1):
                 square = board.get_square_from_pos((self.x, i))
                 if square.occupying_piece is not None:
                     if square.occupying_piece.color != 'white':
@@ -60,8 +62,8 @@ class Ball:
     def moves_down_straight(self,board):
         moves=[]
         #print('In down_straight')
-        if self.x>=board.div and self.x<board.board.shape[1]-board.div :
-            for y in range(self.y + 1, board.board.shape[1]):
+        if self.x>=board.div and self.x<board.matrix.shape[1]-board.div :
+            for y in range(self.y + 1, board.matrix.shape[1]):
                 square = board.get_square_from_pos((self.x, y))
                 if square.occupying_piece is not None:
                     if square.occupying_piece.color != 'white':
@@ -86,8 +88,8 @@ class Ball:
         
     def moves_right_straight(self,board):
         moves = []
-        if self.y>=board.div and self.y<board.board.shape[1]-board.div :
-            for x in range(self.x + 1, board.board.shape[1]):
+        if self.y>=board.div and self.y<board.matrix.shape[1]-board.div :
+            for x in range(self.x + 1, board.matrix.shape[1]):
                 square = board.get_square_from_pos((x, self.y))
                 if square.occupying_piece is not None:
                     if square.occupying_piece.color != 'white':
@@ -105,7 +107,7 @@ class Ball:
     
     def moves_left_straight(self,board):
         moves = []
-        if self.y>=board.div and self.y<board.board.shape[1]-board.div :
+        if self.y>=board.div and self.y<board.matrix.shape[1]-board.div :
             for x in range(self.x)[::-1]:
                 square = board.get_square_from_pos((x, self.y))
                 if square.occupying_piece is not None:
@@ -113,7 +115,7 @@ class Ball:
                         return moves
                     moves.append(square)
             
-            for x in range(board.board.shape[1] - 1, self.x, -1):
+            for x in range(board.matrix.shape[1] - 1, self.x, -1):
                 square = board.get_square_from_pos((x, self.y))
                 #print(self.x)
                 if square.occupying_piece is not None:
@@ -154,30 +156,30 @@ class Ball:
         moves_temp=[]
         #print(self.x,self.y)
         #head or bottom
-        if self.y>=board.board.shape[1]-board.div or self.y<board.div :
+        if self.y>=board.matrix.shape[1]-board.div or self.y<board.div :
             #print('head or bottom')
             # top row
-            top_row=self.y if self.y<board.div else board.board.shape[1]-1-self.y
+            top_row=self.y if self.y<board.div else board.matrix.shape[1]-1-self.y
             #right column
-            right_column=max(self.y,board.board.shape[1]-1-self.y)          
+            right_column=max(self.y,board.matrix.shape[1]-1-self.y)          
             #bottom row
-            bottom_row=board.board.shape[1]-1-self.y if self.y<board.div else self.y            
+            bottom_row=board.matrix.shape[1]-1-self.y if self.y<board.div else self.y            
             #left column
-            left_column=min(self.y,board.board.shape[1]-1-self.y)
+            left_column=min(self.y,board.matrix.shape[1]-1-self.y)
   
             
          
         #right and left arms
-        elif self.x>=board.board.shape[1]-board.div or self.x<board.div :
+        elif self.x>=board.matrix.shape[1]-board.div or self.x<board.div :
             #print('right and left arms')
             # top row
-            top_row=min(self.x,board.board.shape[1]-1-self.x)            
+            top_row=min(self.x,board.matrix.shape[1]-1-self.x)            
             # right column
-            right_column=self.x if self.x>board.div else board.board.shape[1]-1-self.x         
+            right_column=self.x if self.x>board.div else board.matrix.shape[1]-1-self.x         
             #bottom row
-            bottom_row=max(self.x,board.board.shape[1]-1-self.x)              
+            bottom_row=max(self.x,board.matrix.shape[1]-1-self.x)              
             #left column
-            left_column=board.board.shape[1]-1-self.x if self.x>board.div else self.x
+            left_column=board.matrix.shape[1]-1-self.x if self.x>board.div else self.x
         
         else:
             #print('else')
@@ -254,6 +256,15 @@ class Ball:
             i.highlight = False
         if square in self.get_moves(board):
             prev_square = board.get_square_from_pos(self.pos)
+            
+            #print("Self x e y")
+            #print(self.x, self.y)
+            temp=board.matrix[self.y][self.x]
+            #print("Temp")
+            #print(temp)
+            board.matrix[self.y][self.x]=board.matrix[square.y][square.x]
+            board.matrix[square.y][square.x]= temp
+
             self.pos, self.x, self.y = square.pos, square.x, square.y
             prev_square.occupying_piece = Ball((prev_square.x, prev_square.y), 'white', board)
             square.occupying_piece = self
@@ -269,8 +280,18 @@ class Ball:
         #print('Entrou na experimental_move')
         #print(self.x,self.y)
         #print(square)
-        new_board=board
+        #newMatrix = copy.deepcopy(board.matrix)
+        new_board= board.copy()
         prev_square = new_board.get_square_from_pos(self.pos)
+        
+        #print("Matrix: ")
+        #print(new_board.matrix)
+        temp= new_board.matrix[self.y][self.x]
+        #print("Temp")
+        #print(temp)
+        new_board.matrix[self.y][self.x]=new_board.matrix[square.y][square.x]
+        new_board.matrix[square.y][square.x]= temp
+        
         self.pos, self.x, self.y = square.pos, square.x, square.y
         prev_square.occupying_piece = Ball((prev_square.x, prev_square.y), 'white', new_board)
         square.occupying_piece = self

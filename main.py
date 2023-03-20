@@ -169,6 +169,8 @@ def main():
     while running:
         mx, my = pygame.mouse.get_pos()
         events = pygame.event.get()
+        print("Board Turn")
+        print(board.turn)
         if board.turn == "red" and redType == "computer":
             board.computer_move()
         elif board.turn == "blue" and blueType == "computer":
@@ -184,7 +186,7 @@ def main():
                     if (board.turn == "red" and redType == "human") or (board.turn == "blue" and blueType == "human"):
                         if not board.handle_click(mx, my):
                             running=False
-        
+                        print(board.matrix)
             
         if mainmenu.is_enabled():
             mainmenu.update(events)
