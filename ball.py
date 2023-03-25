@@ -305,9 +305,9 @@ class Ball:
         square.occupying_piece = self
         new_board.selected_piece = None
         self.has_moved = True """
-        #print("Carai, era suposto mudar")
+        print("Carai, era suposto mudar")
         new_board.turn = 'blue' if board.turn == 'red' else 'red'
-        #print(new_board.turn)
+        print(new_board.turn)
         return new_board
             
      
