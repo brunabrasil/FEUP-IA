@@ -202,7 +202,6 @@ class WanaNode:
         self.parent=parent
         self.last_piece_and_move=(None,None)
         
-#
     def expand(self):
         for piece in self.board.get_pieces():
             for move in piece.occupying_piece.get_moves(self.board):
