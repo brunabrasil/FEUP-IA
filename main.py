@@ -128,7 +128,9 @@ def main():
         if diff == 1:
             difficulty = "easy"
         if diff == 2:
-            difficulty = "hard"    
+            difficulty = "medium"
+        if diff == 3:
+            difficulty = "hard"  
         
     mytheme = pygame_menu.themes.THEME_BLUE.copy()
     mytheme.cursor_selection_color=(85, 203, 205)
@@ -146,7 +148,7 @@ def main():
     submenu.add.button('Start Game', start_the_game)
     
     difficultymenu = pygame_menu.Menu('Choose computer difficulty', 610, 610, theme=mytheme)
-    difficultymenu.add.selector('Computer Difficulty:', [('Easy', 1), ('Hard', 2)], onchange=set_difficulty)
+    difficultymenu.add.selector('Computer Difficulty:', [('Easy', 1),('Medium', 2),('Hard', 3)], onchange=set_difficulty)
     difficultymenu.add.button('Start Game', start_with_mode)
 
     mainmenu.mainloop(screen)
