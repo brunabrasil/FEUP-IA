@@ -166,15 +166,25 @@ def main():
     
     # define a variable to control the main loop
     running = True
+    flag=0
     while running:
         mx, my = pygame.mouse.get_pos()
         events = pygame.event.get()
-        print("Board Turn")
-        print(board.turn)
+        #print("Board Turn in Main")
+        #print(board.turn)
+        flag=0
         if board.turn == "red" and redType == "computer":
-            board.computer_move()
+           board=board.computer_move()
+           if board.check_gameover(board.turn):
+               draw(screen)
+               time.sleep(1)
+               running=False
         elif board.turn == "blue" and blueType == "computer":
-            board.computer_move()
+           board=board.computer_move()
+           if board.check_gameover(board.turn):
+               draw(screen)
+               time.sleep(1)
+               running=False
             
         for event in events:
             # Quit the game if the user presses the close button
@@ -186,8 +196,12 @@ def main():
                     if (board.turn == "red" and redType == "human") or (board.turn == "blue" and blueType == "human"):
                         if not board.handle_click(mx, my):
                             running=False
-                        print(board.matrix)
+                        #print(board.matrix)
             
+        #if(flag):
+        #   board.turn='blue' if board.turn == 'red' else 'red'
+        
+          
         if mainmenu.is_enabled():
             mainmenu.update(events)
             mainmenu.draw(screen)

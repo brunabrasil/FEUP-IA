@@ -2,7 +2,7 @@ import pygame
 import numpy as np
 import time
 import copy
-from minimax import execute_minimax_move
+from minimax import execute_minimaxAlphaBeta_move
 from square import Square
 from ball import Ball
 class Board:
@@ -22,13 +22,28 @@ class Board:
             self.squares = self.generate_squares()
             self.setup_board()
 
-    def copy(self):
+    def copy(self,new_matrix):
+        #print("Entrou na copy")
         copyobj = Board()
         for name, attr in self.__dict__.items():
+            #print("Name: ",name)
             if hasattr(attr, 'copy') and callable(getattr(attr, 'copy')):
-                copyobj.__dict__[name] = attr.copy()
+                #print("Copy normal")
+                #print(attr)
+                if(name=="matrix"):
+                    #print("ENTERED MATRIx")
+                    copyobj.__dict__[name] = new_matrix
+                    #print(new_matrix)
+                    #print("-.-.-.-.-")
+                else: 
+                    copyobj.__dict__[name] = attr.copy()
             else:
+                #print("Deepcopy")
                 copyobj.__dict__[name] = copy.deepcopy(attr)
+                
+        copyobj.squares = copyobj.generate_squares()
+        copyobj.setup_board()
+
         return copyobj
 
     def generate_squares(self):
@@ -144,16 +159,23 @@ class Board:
         print(self.turn)
         time.sleep(1)
         if self.computerDifficulty=="easy":
+            
             pieces_list=self.get_pieces()
             random_piece=pieces_list[np.random.randint(0,len(pieces_list))]
             random_move_list=random_piece.occupying_piece.get_moves(self)
             random_move=random_move_list[np.random.randint(0,len(random_move_list))]
             self=random_piece.occupying_piece.experimental_move(self,random_move)
-        elif self.computerDifficulty=="hard":
-            self=execute_minimax_move(Board.evaluate,1,self)
+            print("Buscando o inseto")
+            print(self.matrix)
+            self.squares = self.generate_squares()
+            self.setup_board()
             
+        elif self.computerDifficulty=="hard":
+            self=execute_minimaxAlphaBeta_move(Board.evaluate,1,self)
+        
         print("Board turn after computer move")
         print(self.turn)
+        return self
 
 
 

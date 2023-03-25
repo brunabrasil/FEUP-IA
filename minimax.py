@@ -1,11 +1,13 @@
 import pygame
 import numpy as np
-
+import time
 #Em primeiro lugar, verificar se o estado alcançado vai ser terminal (gameover)
 
-def minimax(board,color, depth, alpha, beta, evaluate, maximizing_player):
+def minimaxAlphaBetaAlphaBeta(board,color, depth, alpha, beta, evaluate, maximizing_player):
     if depth == 0 or board.check_gameover(color):
-        #print("In minimax evaluate")
+        if board.check_gameover(color):
+            return 99999999
+        #print("In minimaxAlphaBeta evaluate")
         #print(evaluate(board))
         return evaluate(board)
 
@@ -15,9 +17,9 @@ def minimax(board,color, depth, alpha, beta, evaluate, maximizing_player):
         for piece in board.get_pieces():
             for move in piece.occupying_piece.get_moves(board):
                 new_board = piece.occupying_piece.experimental_move(board,move)
-                print("welelelele")
-                print(new_board.matrix)
-                eval = minimax(new_board,color,depth - 1,alpha,beta,evaluate,False)
+                #print("welelelele")
+                #print(new_board.matrix)
+                eval = minimaxAlphaBeta(new_board,color,depth - 1,alpha,beta,evaluate,False)
                 max_eval = max(max_eval, eval)
                 alpha = max(alpha, eval)
                 if beta <= alpha: 
@@ -33,11 +35,11 @@ def minimax(board,color, depth, alpha, beta, evaluate, maximizing_player):
             for move in piece.occupying_piece.get_moves(board):
                 #new_board = piece.occupying_piece.experimental_move(board, move)
                 new_board = piece.occupying_piece.experimental_move(board,move)
-                print("welelelele")
-                print(new_board.matrix)
+                #print("welelelele")
+                #print(new_board.matrix)
                 #print("kkkkkkkkkk")
                 #print(new_board.matrix)
-                eval = minimax(new_board,color,depth - 1,alpha,beta,evaluate,True)
+                eval = minimaxAlphaBeta(new_board,color,depth - 1,alpha,beta,evaluate,True)
                 min_eval = min(min_eval, eval)
                 beta = min(beta, eval)
                 if beta <= alpha: 
@@ -49,29 +51,31 @@ def minimax(board,color, depth, alpha, beta, evaluate, maximizing_player):
     
     
 
-def execute_minimax_move(evaluate,depth,board):
-    print("In execute minimax move")
+def execute_minimaxAlphaBeta_move(evaluate,depth,board):
+    print("In execute minimaxAlphaBeta move")
     #print(board.matrix)
     
     best_move = None
     best_eval=float('-inf')
     best_piece=None
-     
+    start = time.time()
     for piece in board.get_pieces():
         for move in piece.occupying_piece.get_moves(board):
             new_board=piece.occupying_piece.experimental_move(board, move)
-            new_board_eval=minimax(new_board,board.turn,depth,float('-inf'),float('+inf'),evaluate,False)
-            #print("New board eval")
-            #print(new_board.matrix)
+            new_board_eval=minimaxAlphaBeta(new_board,new_board.turn,depth,float('-inf'),float('+inf'),evaluate,False)
+            print("New board eval")
+            print(new_board_eval)       
             if new_board_eval > best_eval:
-                print("Onolulo")
+                #print("Onolulo")
                 #print(new_board.matrix)
                 #best_move=new_board
                 best_piece=piece
                 best_move=move
                 best_eval=new_board_eval
     
-    
+    end = time.time()
+    print("time: ", end-start)
+    print("BEST EVAL:",best_eval)
     print("Before return")
     #board=best_move
     tet_board=best_piece.occupying_piece.experimental_move(board,best_move)

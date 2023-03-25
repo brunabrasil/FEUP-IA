@@ -281,8 +281,16 @@ class Ball:
         #print(self.x,self.y)
         #print(square)
         #newMatrix = copy.deepcopy(board.matrix)
-        new_board= board.copy()
-        prev_square = new_board.get_square_from_pos(self.pos)
+        new_matrix=copy.deepcopy(board.matrix)
+        
+        
+        temp= board.matrix[self.y][self.x]
+        new_matrix[self.y][self.x]=new_matrix[square.y][square.x]
+        new_matrix[square.y][square.x]= temp
+        new_board= board.copy(new_matrix)
+        
+        
+        """ prev_square = new_board.get_square_from_pos(self.pos)
         
         #print("Matrix: ")
         #print(new_board.matrix)
@@ -296,8 +304,10 @@ class Ball:
         prev_square.occupying_piece = Ball((prev_square.x, prev_square.y), 'white', new_board)
         square.occupying_piece = self
         new_board.selected_piece = None
-        self.has_moved = True
-        new_board.turn = 'blue' if new_board.turn == 'red' else 'red'
+        self.has_moved = True """
+        #print("Carai, era suposto mudar")
+        new_board.turn = 'blue' if board.turn == 'red' else 'red'
+        #print(new_board.turn)
         return new_board
             
      
