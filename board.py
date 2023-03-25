@@ -2,9 +2,12 @@ import pygame
 import numpy as np
 import time
 import copy
-from minimax import execute_minimax_move
+from minimax import execute_minimaxAlphaBeta_move, execute_minimaxNormal_move
 from square import Square
 from ball import Ball
+import random
+import math
+
 class Board:
     def __init__(self, width=None, height=None,boardChoosen=None, redType=None, blueType=None,difficulty=None):
         if(width is not None):
@@ -22,13 +25,28 @@ class Board:
             self.squares = self.generate_squares()
             self.setup_board()
 
-    def copy(self):
+    def copy(self,new_matrix):
+        #print("Entrou na copy")
         copyobj = Board()
         for name, attr in self.__dict__.items():
+            #print("Name: ",name)
             if hasattr(attr, 'copy') and callable(getattr(attr, 'copy')):
-                copyobj.__dict__[name] = attr.copy()
+                #print("Copy normal")
+                #print(attr)
+                if(name=="matrix"):
+                    #print("ENTERED MATRIx")
+                    copyobj.__dict__[name] = new_matrix
+                    #print(new_matrix)
+                    #print("-.-.-.-.-")
+                else: 
+                    copyobj.__dict__[name] = attr.copy()
             else:
+                #print("Deepcopy")
                 copyobj.__dict__[name] = copy.deepcopy(attr)
+                
+        copyobj.squares = copyobj.generate_squares()
+        copyobj.setup_board()
+
         return copyobj
 
     def generate_squares(self):
@@ -144,17 +162,100 @@ class Board:
         print(self.turn)
         time.sleep(1)
         if self.computerDifficulty=="easy":
+            
             pieces_list=self.get_pieces()
             random_piece=pieces_list[np.random.randint(0,len(pieces_list))]
             random_move_list=random_piece.occupying_piece.get_moves(self)
             random_move=random_move_list[np.random.randint(0,len(random_move_list))]
             self=random_piece.occupying_piece.experimental_move(self,random_move)
-        elif self.computerDifficulty=="hard":
-            self=execute_minimax_move(Board.evaluate,1,self)
+            print("Buscando o inseto")
+            print(self.matrix)
+            self.squares = self.generate_squares()
+            self.setup_board()
             
+        elif self.computerDifficulty=="hard":
+            self=execute_minimaxAlphaBeta_move(Board.evaluate,2,self)
+            #self=execute_minimaxNormal_move(Board.evaluate,1,self)
+        
         print("Board turn after computer move")
         print(self.turn)
-
-
-
+        return self
     
+
+
+class WanaNode:
+    def __init__(self, board, turn):
+        self.board = board
+        self.turn = turn
+        self.children = []
+        self.visits = 0
+        self.wins = 0
+
+    def expand(self):
+        for move in self.board.get_possible_moves(self.turn):
+            next_board = self.board.move(move, self.turn)
+            next_turn = self.board.get_next_turn(self.turn)
+            child = WanaNode(next_board, next_turn)
+            self.children.append(child)
+
+    def select(self):
+        c = 1.4
+        total_visits = sum(child.visits for child in self.children)
+        log_total_visits = math.log(total_visits)
+
+        best_score = float('-inf')
+        best_child = None
+
+        for child in self.children:
+            exploitation = child.wins / child.visits
+            exploration = c * math.sqrt(log_total_visits / child.visits)
+            score = exploitation + exploration
+
+            if score > best_score:
+                best_score = score
+                best_child = child
+
+        return best_child
+
+    def simulate(self):
+        board = self.board.copy()
+        turn = self.turn
+        while True:
+            moves = board.get_legal_moves(turn)
+            if not moves:
+                break
+            move = random.choice(moves)
+            board = board.move(move, turn)
+            turn = board.get_next_turn(turn)
+        return board.get_winner() == self.turn
+
+    def backpropagate(self, result):
+        self.visits += 1
+        self.wins += result
+        if self.parent:
+            self.parent.backpropagate(result)
+
+class WanaMCTS:
+    def __init__(self, board, turn, max_simulations):
+        self.root = WanaNode(board, turn)
+        self.max_simulations = max_simulations
+
+    def search(self):
+        for i in range(self.max_simulations):
+            node = self.root
+            while node.children:
+                node = node.select()
+            if node.visits == 0:
+                node.expand()
+            result = node.simulate()
+            node.backpropagate(result)
+
+        best_child = max(self.root.children, key=lambda child: child.visits)
+        return best_child.board.last_move
+
+
+
+
+
+
+
