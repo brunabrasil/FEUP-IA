@@ -12,6 +12,12 @@ Adversarial Search Methods for Two-Player Board Game
 
 ## Building and Running
 
-(install numpy, pygame e pygame_menu)
+To install dependencies run:
 
-Run <kbd>python3 main.py</kbd>.
+1. pip install numpy
+2. pip install pygame
+3. pip install pygame-menu
+
+To run project:
+
+python3 main.py
