@@ -69,6 +69,7 @@ def main():
     board = Board(WINDOW_SIZE[0], WINDOW_SIZE[1],board1,redType,blueType, difficulty)
     actualsize=1
     
+    # initialize board with configurations chosen - including the difficulty of the computer
     def start_with_mode():
         global redType
         global blueType
@@ -85,6 +86,7 @@ def main():
         submenu.disable()
         mainmenu.disable()
     
+    # initialize board with configurations chosen
     def start_the_game():
         global redType
         global blueType
@@ -102,14 +104,16 @@ def main():
             submenu.disable()
             mainmenu.disable()
     
+    # open level menu
     def level_menu():
         mainmenu._open(submenu)
     
+    # define size of board
     def set_size(value, size):
-        print(value)
-        global actualsize 
+        global actualsize
         actualsize = size
         
+    # define game mode
     def set_mode(value, mode):
         global redType
         global blueType
@@ -123,6 +127,7 @@ def main():
             redType="computer"
             blueType="computer"
     
+    # define game difficulty
     def set_difficulty(value, diff):
         global difficulty
         if diff == 1:
@@ -153,9 +158,7 @@ def main():
 
     mainmenu.mainloop(screen)
 
-    # load and set the logo
-    #logo = pygame.image.load("logo.png")
-    #pygame.display.set_icon(logo)
+    # draw screen with board
     def draw(display):
         color=(254, 248, 221)
         display.fill(color)
@@ -164,17 +167,13 @@ def main():
 
     arrow = pygame_menu.widgets.LeftArrowSelection(arrow_size = (10, 15))
  
-    # create a surface on screen that has the size of 240 x 180
-    
     # define a variable to control the main loop
     running = True
-    flag=0
+  
     while running:
         mx, my = pygame.mouse.get_pos()
         events = pygame.event.get()
-        #print("Board Turn in Main")
-        #print(board.turn)
-        flag=0
+      
         if board.turn == "red" and redType == "computer":
            board=board.computer_move()
            if board.check_gameover(board.turn):
@@ -198,11 +197,7 @@ def main():
                     if (board.turn == "red" and redType == "human") or (board.turn == "blue" and blueType == "human"):
                         if not board.handle_click(mx, my):
                             running=False
-                        #print(board.matrix)
-            
-        #if(flag):
-        #   board.turn='blue' if board.turn == 'red' else 'red'
-        
+
           
         if mainmenu.is_enabled():
             mainmenu.update(events)
@@ -211,6 +206,8 @@ def main():
                 arrow.draw(screen, mainmenu.get_current().get_selected_widget())
  
         draw(screen)
+
+    #gameover screen
     if board.turn == 'blue':
         screen.fill((0, 0, 0))
         font = pygame.font.SysFont('arial', 40)
