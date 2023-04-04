@@ -20,4 +20,4 @@ To install dependencies run:
 
 To run project:
 
-python3 main.py
+<kbd>python3 -m main</kbd> or <kbd>py -m main</kbd>
