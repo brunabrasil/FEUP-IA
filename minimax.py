@@ -1,10 +1,11 @@
 import pygame
 import numpy as np
 import time
-#Em primeiro lugar, verificar se o estado alcançado vai ser terminal (gameover)
 
+# minimax algorithm
 def minimaxNormal(board,color,depth,evaluate,maximizing_player):
     if depth == 0 or board.check_gameover(color):
+        # prioritize the move which makes the player win
         if board.check_gameover(color):
             return 99999999
         return evaluate(board)
@@ -26,13 +27,12 @@ def minimaxNormal(board,color,depth,evaluate,maximizing_player):
                 min_eval = min(min_eval, eval)
         return min_eval
     
-
+# minimax algorithm with alpha-beta cuts
 def minimaxAlphaBeta(board,color, depth, alpha, beta, evaluate, maximizing_player):
     if depth == 0 or board.check_gameover(color):
+        # prioritize the move which makes the player win
         if board.check_gameover(color):
             return 99999999
-        #print("In minimaxAlphaBeta evaluate")
-        #print(evaluate(board))
         return evaluate(board)
 
     if maximizing_player:
@@ -57,12 +57,7 @@ def minimaxAlphaBeta(board,color, depth, alpha, beta, evaluate, maximizing_playe
         min_flag=0
         for piece in board.get_pieces():
             for move in piece.occupying_piece.get_moves(board):
-                #new_board = piece.occupying_piece.experimental_move(board, move)
                 new_board = piece.occupying_piece.experimental_move(board,move)
-                #print("welelelele")
-                #print(new_board.matrix)
-                #print("kkkkkkkkkk")
-                #print(new_board.matrix)
                 eval = minimaxAlphaBeta(new_board,color,depth - 1,alpha,beta,evaluate,True)
                 min_eval = min(min_eval, eval)
                 beta = min(beta, eval)
@@ -74,10 +69,8 @@ def minimaxAlphaBeta(board,color, depth, alpha, beta, evaluate, maximizing_playe
         return min_eval
     
     
-
+# call the minimax algorithm with alpha-beta cuts for each move of each piece of the player
 def execute_minimaxAlphaBeta_move(evaluate,depth,board):
-    print("In execute minimaxAlphaBeta move")
-    #print(board.matrix)
     
     best_move = None
     best_eval=float('-inf')
@@ -86,30 +79,20 @@ def execute_minimaxAlphaBeta_move(evaluate,depth,board):
     for piece in board.get_pieces():
         for move in piece.occupying_piece.get_moves(board):
             new_board=piece.occupying_piece.experimental_move(board, move)
-            new_board_eval=minimaxAlphaBeta(new_board,new_board.turn,depth,float('-inf'),float('+inf'),evaluate,False)
-            #print("New board eval")
-            #print(new_board_eval)       
+            new_board_eval=minimaxAlphaBeta(new_board,new_board.turn,depth,float('-inf'),float('+inf'),evaluate,False)  
             if new_board_eval > best_eval:
-                #print("Onolulo")
-                #print(new_board.matrix)
-                #best_move=new_board
                 best_piece=piece
                 best_move=move
                 best_eval=new_board_eval
     
     end = time.time()
     print("time time taken to get move: ", end-start)
-    #print("BEST EVAL:",best_eval)
-    #print("Before return")
-    #board=best_move
     tet_board=best_piece.occupying_piece.experimental_move(board,best_move)
-    #print(tet_board.matrix)
     return tet_board
 
-
+# calls the normal minimax algorithm for each move of each piece of the player
 def execute_minimaxNormal_move(evaluate,depth,board):
-    print("In execute minimaxNormal move")
-    #print(board.matrix)
+
     
     best_move = None
     best_eval=float('-inf')
@@ -118,22 +101,13 @@ def execute_minimaxNormal_move(evaluate,depth,board):
     for piece in board.get_pieces():
         for move in piece.occupying_piece.get_moves(board):
             new_board=piece.occupying_piece.experimental_move(board, move)
-            new_board_eval=minimaxNormal(new_board,new_board.turn,depth,evaluate,False)
-            #print("New board eval")
-            #print(new_board_eval)       
+            new_board_eval=minimaxNormal(new_board,new_board.turn,depth,evaluate,False)      
             if new_board_eval > best_eval:
-                #print("Onolulo")
-                #print(new_board.matrix)
-                #best_move=new_board
                 best_piece=piece
                 best_move=move
                 best_eval=new_board_eval
     
     end = time.time()
     print("time taken to get move: ", end-start)
-    #print("BEST EVAL:",best_eval)
-    #print("Before return")
-    #board=best_move
     tet_board=best_piece.occupying_piece.experimental_move(board,best_move)
-    #print(tet_board.matrix)
     return tet_board
