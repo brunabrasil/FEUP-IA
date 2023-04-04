@@ -25,23 +25,16 @@ class Board:
             self.squares = self.generate_squares()
             self.setup_board()
 
+    # Creates a new Board instance with the same attributes as the current one or with a new matrix
     def copy(self,new_matrix=None):
-        #print("Entrou na copy")
         copyobj = Board()
         for name, attr in self.__dict__.items():
-            #print("Name: ",name)
             if hasattr(attr, 'copy') and callable(getattr(attr, 'copy')):
-                #print("Copy normal")
-                #print(attr)
                 if(name=="matrix" and new_matrix is not None):
-                    #print("ENTERED MATRIx")
                     copyobj.__dict__[name] = new_matrix
-                    #print(new_matrix)
-                    #print("-.-.-.-.-")
                 else: 
                     copyobj.__dict__[name] = attr.copy()
             else:
-                #print("Deepcopy")
                 copyobj.__dict__[name] = copy.deepcopy(attr)
                 
         copyobj.squares = copyobj.generate_squares()
@@ -49,6 +42,7 @@ class Board:
 
         return copyobj
 
+    # generates the squares of the board based on the matrix of the board
     def generate_squares(self):
         board = []
         for y in range(self.matrix.shape[0]):
@@ -67,7 +61,7 @@ class Board:
     def get_piece_from_pos(self, pos):
         return self.get_square_from_pos(pos).occupying_piece
     
-
+    # Set up the board with the pieces in the correct positions
     def setup_board(self):
         for y, row in enumerate(self.matrix):
             for x, piece in enumerate(row):
@@ -90,19 +84,16 @@ class Board:
 
     def draw(self, display):
         if self.selected_piece is not None:
-            #self.get_square_from_pos(self.selected_piece.pos).highlight = True
-          #  print(list)
             for square in self.selected_piece.get_moves(self):
-                #print(square)
                 square.highlight = True
         for square in self.squares:
             square.draw(display)
 
+    # handles the click of the mouse on the board
     def handle_click(self, mx, my):
         x = mx // self.tile_width
         y = my // self.tile_height
         clicked_square = self.get_square_from_pos((x, y))
-        #print(clicked_square.x, clicked_square.y)
         if self.selected_piece is None:
             if clicked_square.occupying_piece is not None:
                 if clicked_square.occupying_piece.color == self.turn:
@@ -115,7 +106,7 @@ class Board:
         return True   
         
         
-
+    # check if it is game over - player of the round can not move a piece    
     def check_gameover(self,color):
         output = False
         
@@ -137,6 +128,7 @@ class Board:
                     )
         return pieces
 
+    # evaluation function: apllies the heuristic
     def evaluate(board):
         red_score=0
         blue_score=0
@@ -156,11 +148,11 @@ class Board:
     
     
     
-    
+    # executes the computer's move based on the difficulty chosen
     def computer_move(self):
-        print("In computer move")
-        print(self.turn)
+        # Used to slow down the computer's move so that its not instantaneous, doesn't interfere with the algorithms run time
         time.sleep(1)
+        # Random move
         if self.computerDifficulty=="easy":
             
             pieces_list=self.get_pieces()
@@ -168,30 +160,26 @@ class Board:
             random_move_list=random_piece.occupying_piece.get_moves(self)
             random_move=random_move_list[np.random.randint(0,len(random_move_list))]
             self=random_piece.occupying_piece.experimental_move(self,random_move)
-            #print("Buscando o inseto")
-            #print(self.matrix)
             self.squares = self.generate_squares()
             self.setup_board()
-        
+
+        # Monte Carlo Tree Search
         elif self.computerDifficulty=="medium":
-            print("Turn before computer move:",self.turn)
-            mcts=WanaMCTS(self,self.turn,5) 
+            mcts=WanaMCTS(self,self.turn,10) 
+            pieces_list=self.get_pieces()
             piece_and_move=mcts.search()
-            print(piece_and_move[0].occupying_piece.pos,piece_and_move[1].occupying_piece.pos)
             self=piece_and_move[0].occupying_piece.experimental_move(self,piece_and_move[1])
 
-            
+        # Minimax     
         elif self.computerDifficulty=="hard":
             self=execute_minimaxAlphaBeta_move(Board.evaluate,1,self)
             #self=execute_minimaxNormal_move(Board.evaluate,1,self)
 
             
-        #print("Board turn after computer move")
-        #print(self.turn)
         return self
     
 
-
+# WanaNode class for the MCTS algorithm
 class WanaNode:
     def __init__(self, board, turn,parent=None):
         self.board = board.copy()
@@ -201,7 +189,8 @@ class WanaNode:
         self.wins = 0
         self.parent=parent
         self.last_piece_and_move=(None,None)
-        
+
+    # expands the node by creating all possible child nodes    
     def expand(self):
         for piece in self.board.get_pieces():
             for move in piece.occupying_piece.get_moves(self.board):
@@ -210,10 +199,10 @@ class WanaNode:
                 child.last_piece_and_move=(piece,move)
                 self.children.append(child)
 
+    # selects the best child node
     def select(self):   
         c = 1.4
         total_visits = sum(child.visits for child in self.children)
-        #print("TOTAL VISITS:",total_visits)
         log_total_visits = math.log(total_visits) if total_visits > 0 else 1
 
         best_score = float('-inf')
@@ -233,64 +222,54 @@ class WanaNode:
 
         return best_child
 
-
+    # simulates a random game from this node
     def simulate(self):
-        #print("IN simulate")
-        #print("SElf turn:",self.turn)
         board = self.board.copy()
         board.turn = self.turn
-        last_piece=None
-        last_move=None
-        #print("Board turn:",board.turn)
         while True:
             if(board.check_gameover(board.turn)):
                 break
             
             pieces=board.get_pieces()
             random_piece=pieces[np.random.randint(0,len(pieces))]
-            #print("Random piece color:",random_piece.occupying_piece.color)
             random_move_list=random_piece.occupying_piece.get_moves(board)
             random_move=random_move_list[np.random.randint(0,len(random_move_list))]
             random_piece.occupying_piece.move(board,random_move)
+            board.turn = 'blue' if board.turn == 'red' else 'red'
             
-            if(last_piece is None and last_move is None):
-                last_piece=random_piece
-                last_move=random_move
-                #print("Random piece:",random_piece.occupying_piece.pos)
-                #print("Random move:",random_move.occupying_piece.pos)
-        
-        #!!!!!!!!!!
-        #print("Last piece and move:", last_piece.occupying_piece.color, last_move.occupying_piece.color)
-        #self.last_piece_and_move=(last_piece,last_move)
-        
-        return board.turn == self.turn
-
+    
+        return board.turn != self.turn
+    # backpropagates the result of the simulation
     def backpropagate(self, result):
         self.visits += 1
         self.wins += result
         if self.parent:
             self.parent.backpropagate(result)
 
+# WanaMCTS class for the MCTS algorithm
 class WanaMCTS:
     def __init__(self, board, turn, max_simulations):
         self.root = WanaNode(board, turn)
         self.max_simulations = max_simulations
 
+    # searches for the best move
     def search(self):
         for i in range(self.max_simulations):
             node = self.root
             while node.children:
-                #print("A ir para o select")
                 node = node.select()
-                #print("Saiu do select caraca")
+                
             if node.visits == 0:
                 node.expand()
             result = node.simulate()
-            #print("Node last_piece_and_move",node.last_piece_and_move)
             node.backpropagate(result)
         
-            
-        best_child = max(self.root.children, key=lambda child: child.wins)
+        
+        most_wins = max(self.root.children, key=lambda child: child.wins).wins
+        best_children = [child for child in self.root.children if child.wins == most_wins]
+        random=np.random.randint(0,len(best_children))
+        best_child=best_children[random]        
+        
         return best_child.last_piece_and_move
 
 
