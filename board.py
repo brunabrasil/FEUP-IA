@@ -105,6 +105,7 @@ class Board:
                 return False
         return True   
         
+        
     # check if it is game over - player of the round can not move a piece    
     def check_gameover(self,color):
         output = False
@@ -161,14 +162,15 @@ class Board:
             self=random_piece.occupying_piece.experimental_move(self,random_move)
             self.squares = self.generate_squares()
             self.setup_board()
-            
+
         # Monte Carlo Tree Search
         elif self.computerDifficulty=="medium":
-            mcts=WanaMCTS(self,self.turn,3)
+            mcts=WanaMCTS(self,self.turn,10) 
+            pieces_list=self.get_pieces()
             piece_and_move=mcts.search()
             self=piece_and_move[0].occupying_piece.experimental_move(self,piece_and_move[1])
 
-        # Minimax 
+        # Minimax     
         elif self.computerDifficulty=="hard":
             self=execute_minimaxAlphaBeta_move(Board.evaluate,1,self)
             #self=execute_minimaxNormal_move(Board.evaluate,1,self)
@@ -188,16 +190,17 @@ class WanaNode:
         self.parent=parent
         self.last_piece_and_move=(None,None)
 
-    # expands the node by creating all possible child nodes
+    # expands the node by creating all possible child nodes    
     def expand(self):
         for piece in self.board.get_pieces():
             for move in piece.occupying_piece.get_moves(self.board):
                 next_board = piece.occupying_piece.experimental_move(self.board,move)
                 child = WanaNode(next_board, self.turn,self)
+                child.last_piece_and_move=(piece,move)
                 self.children.append(child)
-    
+
     # selects the best child node
-    def select(self):
+    def select(self):   
         c = 1.4
         total_visits = sum(child.visits for child in self.children)
         log_total_visits = math.log(total_visits) if total_visits > 0 else 1
@@ -223,9 +226,6 @@ class WanaNode:
     def simulate(self):
         board = self.board.copy()
         board.turn = self.turn
-        last_piece=None
-        last_move=None
-       
         while True:
             if(board.check_gameover(board.turn)):
                 break
@@ -234,16 +234,11 @@ class WanaNode:
             random_piece=pieces[np.random.randint(0,len(pieces))]
             random_move_list=random_piece.occupying_piece.get_moves(board)
             random_move=random_move_list[np.random.randint(0,len(random_move_list))]
-            board=random_piece.occupying_piece.experimental_move(board,random_move)
+            random_piece.occupying_piece.move(board,random_move)
+            board.turn = 'blue' if board.turn == 'red' else 'red'
             
-            if(last_piece is None and last_move is None):
-                last_piece=random_piece
-                last_move=random_move
-        
-
-        self.last_piece_and_move=(last_piece,last_move)
+    
         return board.turn != self.turn
-
     # backpropagates the result of the simulation
     def backpropagate(self, result):
         self.visits += 1
@@ -263,12 +258,18 @@ class WanaMCTS:
             node = self.root
             while node.children:
                 node = node.select()
+                
             if node.visits == 0:
                 node.expand()
             result = node.simulate()
             node.backpropagate(result)
-
-        best_child = max(self.root.children, key=lambda child: child.visits)
+        
+        
+        most_wins = max(self.root.children, key=lambda child: child.wins).wins
+        best_children = [child for child in self.root.children if child.wins == most_wins]
+        random=np.random.randint(0,len(best_children))
+        best_child=best_children[random]        
+        
         return best_child.last_piece_and_move
 
 

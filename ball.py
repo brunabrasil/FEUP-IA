@@ -24,6 +24,7 @@ class Ball:
         for direction in self.get_possible_moves(board):
             for square in direction:
                 output.append(square)
+                    
                 
         return output
     
@@ -39,8 +40,7 @@ class Ball:
                         return moves
                     else:
                         moves.append(square) 
-
-          
+                        
             for i in range(board.matrix.shape[1]-1, self.y,-1):
                 square = board.get_square_from_pos((self.x, i))
                 if square.occupying_piece is not None:
@@ -170,7 +170,7 @@ class Ball:
         
         else:
             return []    
-    
+        
         moves_temp=self.aux_curve_moves(board,top_row,right_column,bottom_row,left_column)
         
         square_index=moves_temp.index(board.get_square_from_pos((self.x,self.y)))
@@ -213,6 +213,7 @@ class Ball:
     
         return moves
 
+    
     #Returns a list with all the possible moves for the ball
     def get_possible_moves(self, board):
         output = []
@@ -222,6 +223,7 @@ class Ball:
         output.append(self.moves_left_straight(board))
         output.append(self.moves_clockwise(board))
         return output
+    
     
     # Applies the move choosen to the board
     def move(self, board, square):
@@ -244,14 +246,18 @@ class Ball:
         else:
             board.selected_piece = None
             return False
-    
-    # Returns a new board with the move applied  
+
+    # Returns a new board with the move applied      
     def experimental_move(self, board, square):
-        new_matrix=copy.deepcopy(board.matrix) 
+        new_matrix=copy.deepcopy(board.matrix)
+        
+        
         temp= board.matrix[self.y][self.x]
         new_matrix[self.y][self.x]=new_matrix[square.y][square.x]
         new_matrix[square.y][square.x]= temp
         new_board= board.copy(new_matrix)
+        
+        
         new_board.turn = 'blue' if board.turn == 'red' else 'red'
         return new_board
             

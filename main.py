@@ -110,10 +110,10 @@ def main():
     
     # define size of board
     def set_size(value, size):
-        global actualsize
+        global actualsize 
         actualsize = size
-        
-    # define game mode
+
+    # define game mode    
     def set_mode(value, mode):
         global redType
         global blueType
@@ -144,7 +144,6 @@ def main():
     
     mainmenu = pygame_menu.Menu('WANA', 610, 610, theme=mytheme)
     mainmenu.add.button('Play', level_menu)
-    mainmenu.add.button('Instructions', level_menu)
     mainmenu.add.button('Quit', pygame_menu.events.EXIT)
     
     submenu = pygame_menu.Menu('Game Options', 610, 610, theme=mytheme)
@@ -165,15 +164,13 @@ def main():
         board.draw(display)
         pygame.display.update()
 
+    # define a variable to control the main loop
     arrow = pygame_menu.widgets.LeftArrowSelection(arrow_size = (10, 15))
  
-    # define a variable to control the main loop
     running = True
-  
     while running:
         mx, my = pygame.mouse.get_pos()
         events = pygame.event.get()
-      
         if board.turn == "red" and redType == "computer":
            board=board.computer_move()
            if board.check_gameover(board.turn):
@@ -186,7 +183,6 @@ def main():
                draw(screen)
                time.sleep(1)
                running=False
-            
         for event in events:
             # Quit the game if the user presses the close button
             if event.type == pygame.QUIT:
@@ -197,7 +193,9 @@ def main():
                     if (board.turn == "red" and redType == "human") or (board.turn == "blue" and blueType == "human"):
                         if not board.handle_click(mx, my):
                             running=False
-
+                        
+            
+        
           
         if mainmenu.is_enabled():
             mainmenu.update(events)

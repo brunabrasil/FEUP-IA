@@ -68,7 +68,8 @@ def minimaxAlphaBeta(board,color, depth, alpha, beta, evaluate, maximizing_playe
     
     
 # call the minimax algorithm with alpha-beta cuts for each move of each piece of the player
-def execute_minimaxAlphaBeta_move(evaluate,depth,board):    
+def execute_minimaxAlphaBeta_move(evaluate,depth,board):
+    
     best_move = None
     best_eval=float('-inf')
     best_piece=None
@@ -89,6 +90,8 @@ def execute_minimaxAlphaBeta_move(evaluate,depth,board):
 
 # calls the normal minimax algorithm for each move of each piece of the player
 def execute_minimaxNormal_move(evaluate,depth,board):
+
+    
     best_move = None
     best_eval=float('-inf')
     best_piece=None
@@ -96,7 +99,7 @@ def execute_minimaxNormal_move(evaluate,depth,board):
     for piece in board.get_pieces():
         for move in piece.occupying_piece.get_moves(board):
             new_board=piece.occupying_piece.experimental_move(board, move)
-            new_board_eval=minimaxNormal(new_board,new_board.turn,depth,evaluate,False)    
+            new_board_eval=minimaxNormal(new_board,new_board.turn,depth,evaluate,False)      
             if new_board_eval > best_eval:
                 best_piece=piece
                 best_move=move
