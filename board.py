@@ -266,11 +266,9 @@ class WanaMCTS:
         
         
         most_wins = max(self.root.children, key=lambda child: child.wins).wins
-        print("Most Wins: ",most_wins)
         best_children = [child for child in self.root.children if child.wins == most_wins]
-        print("Best Children: ",len(best_children))
-        best_child=best_children[np.random.randint(0,len(best_children))]        
-        print("Self.turn: ",self.root.turn)
+        random=np.random.randint(0,len(best_children))
+        best_child=best_children[random]        
         
         return best_child.last_piece_and_move
 

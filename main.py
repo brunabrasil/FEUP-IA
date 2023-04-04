@@ -168,28 +168,21 @@ def main():
     arrow = pygame_menu.widgets.LeftArrowSelection(arrow_size = (10, 15))
  
     running = True
-    count_red=0
-    count_blue=0
     while running:
         mx, my = pygame.mouse.get_pos()
         events = pygame.event.get()
         if board.turn == "red" and redType == "computer":
            board=board.computer_move()
-           count_red+=1
            if board.check_gameover(board.turn):
                draw(screen)
                time.sleep(1)
                running=False
-               print("RED won, moves needed: ", count_red)
         elif board.turn == "blue" and blueType == "computer":
            board=board.computer_move()
-           count_blue+=1
            if board.check_gameover(board.turn):
                draw(screen)
                time.sleep(1)
                running=False
-               print("Blue won, moves needed: ", count_blue)
-            
         for event in events:
             # Quit the game if the user presses the close button
             if event.type == pygame.QUIT:
